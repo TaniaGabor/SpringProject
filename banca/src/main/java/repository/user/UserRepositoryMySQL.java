@@ -1,10 +1,14 @@
 package repository.user;
+import database.Util;
 import model.User;
 import model.builder.UserBuilder;
 import model.validation.Notification;
+import model.validation.UserValidator;
 import repository.security.RightsRolesRepository;
 
+import java.security.MessageDigest;
 import java.sql.*;
+import java.util.Collections;
 import java.util.List;
 
 import static database.Constants.Tables.USER;
@@ -51,6 +55,48 @@ public class UserRepositoryMySQL implements UserRepository {
     }
 
     @Override
+    public Notification<Long> findByUsername(String username) throws AuthenticationException {
+        Notification<Long> findByUsername = new Notification<>();
+        try {
+            Statement statement = connection.createStatement();
+            String fetchUserSql = "Select * from `" + USER + "` where `username`=\'" + username + "\'";
+            ResultSet userResultSet = statement.executeQuery(fetchUserSql);
+            if (userResultSet.next()) {
+                Long id = userResultSet.getLong("id");
+                findByUsername.setResult(id);
+                return findByUsername;
+            } else {
+                findByUsername.addError("Invalid username");
+                return findByUsername;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new AuthenticationException();
+        }
+    }
+
+    @Override
+    public Notification<Long> deleteByUsername(String username) throws AuthenticationException {
+        Notification<Long> findByUsername = new Notification<>();
+        try {
+            Statement statement = connection.createStatement();
+            String fetchUserSql = "Delete from `" + USER + "` where `username`=\'" + username + "\'";
+            int result = statement.executeUpdate(fetchUserSql);
+            if (result != 0) {
+                findByUsername.setResult((long) 1);
+                return findByUsername;
+            } else {
+                findByUsername.addError("Could not find username!");
+                return findByUsername;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new AuthenticationException();
+        }
+
+    }
+
+    @Override
     public boolean save(User user) {
         try {
             PreparedStatement insertUserStatement = connection
@@ -87,4 +133,44 @@ public class UserRepositoryMySQL implements UserRepository {
     }
 
 
+    public Notification<Boolean>  modifyPassword(String username, String password) {
+        Notification<Boolean> userRegisterNotification = new Notification<>();
+        String newPass=null;
+        try {
+            User user = new UserBuilder()
+                    .setUsername(username)
+                    .setPassword(password)
+                    .build();
+
+            UserValidator userValidator = new UserValidator(user);
+            boolean userValid = userValidator.validate();
+
+
+            if (!userValid) {
+                userValidator.getErrors().forEach(userRegisterNotification::addError);
+                userRegisterNotification.setResult(Boolean.FALSE);
+            } else {
+                newPass = Util.encodePassword(password);
+                user.setPassword(newPass);
+                userRegisterNotification.setResult(Boolean.TRUE);
+                PreparedStatement statement = connection.prepareStatement("Update user set password=? where username=?");
+                statement.setString(1, newPass);
+                statement.setString(2, username);
+                statement.executeUpdate();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+
+
+        }
+        return userRegisterNotification;
+
+
+    }
+
+
 }
+
+

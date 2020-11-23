@@ -19,6 +19,7 @@ public class UserValidator {
 
     private final User user;
 
+
     public UserValidator(User user) {
         this.user = user;
         errors = new ArrayList<>();
@@ -37,6 +38,7 @@ public class UserValidator {
     }
 
     private void validatePassword(String password) {
+
         if (password.length() < MIN_PASSWORD_LENGTH) {
             errors.add("Password too short!");
         }

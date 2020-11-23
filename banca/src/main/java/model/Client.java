@@ -58,11 +58,6 @@ public class Client {
         this.adress = adress;
     }
 
-    public Long getAmountofMoney() {
-        return amountofMoney;
+
     }
 
-    public void setAmountofMoney(Long amountofMoney) {
-        this.amountofMoney = amountofMoney;
-    }
-}

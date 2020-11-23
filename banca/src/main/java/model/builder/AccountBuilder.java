@@ -31,7 +31,7 @@ public class AccountBuilder {
         account.setDateofCreation(dateofCreation);
         return this;
     }
-    public AccountBuilder setAmountofMoney(Long amountofMoney) {
+    public AccountBuilder setAmountofMoney(Double amountofMoney) {
         account.setAmountofMoney(amountofMoney);
         return this;
     }

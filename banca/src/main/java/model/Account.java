@@ -8,7 +8,7 @@ public class Account {
     private String identityCardNumber;
     private String type;
     private Date dateofCreation;
-    private Long amountofMoney;
+    private Double amountofMoney;
 
     @Override
     public boolean equals(Object obj) {
@@ -54,11 +54,11 @@ public class Account {
         this.dateofCreation = dateofCreation;
     }
 
-    public Long getAmountofMoney() {
+    public Double getAmountofMoney() {
         return amountofMoney;
     }
 
-    public void setAmountofMoney(Long amountofMoney) {
+    public void setAmountofMoney(Double amountofMoney) {
         this.amountofMoney = amountofMoney;
     }
 }

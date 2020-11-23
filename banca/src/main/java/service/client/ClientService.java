@@ -3,6 +3,7 @@ package service.client;
 
 
 import model.Client;
+import model.validation.Notification;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ public interface ClientService {
 
     Client findById(Long id);
 
-    boolean save(Client client);
+    Notification<Boolean> save(String name, String cnp,String idenNumber,String adress);
 
 
 }

@@ -22,6 +22,7 @@ public class ClientBuilder {
         return this;
     }
 
+
     public ClientBuilder setPersonalNumericalCode(String personalNumericalCode) {
         client.setPersonalNumericalCode(personalNumericalCode);
         return this;

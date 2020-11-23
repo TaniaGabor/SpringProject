@@ -3,6 +3,7 @@ package database;
 import utility.JDBConnectionWrapper;
 
 public class DBConnectionFactory {
+
     public JDBConnectionWrapper getConnectionWrapper(boolean test)
     {
         if(test){

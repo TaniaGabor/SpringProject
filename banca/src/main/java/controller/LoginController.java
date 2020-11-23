@@ -1,26 +1,35 @@
 package controller;
 
 import database.Constants;
+import model.Right;
 import model.Role;
 import model.User;
 import model.validation.Notification;
 import repository.user.AuthenticationException;
+import service.account.AccountService;
+import service.client.ClientService;
 import service.user.AuthenticationService;
 import view.LoginView;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-import static database.Constants.Roles.ADMINISTRATOR;
-import static database.Constants.Roles.CUSTOMER;
+import static database.Constants.Rights.VIEW_USER;
+import static database.Constants.Roles.*;
 
 public class LoginController {
     private final LoginView loginView;
     private final AuthenticationService authenticationService;
+    private final AccountService accountService;
+    private final ClientService clientService;
 
-    public LoginController(LoginView loginView, AuthenticationService authenticationService) {
+    public LoginController(LoginView loginView, AuthenticationService authenticationService,AccountService accountService, ClientService clientService) {
         this.loginView = loginView;
+        this.accountService=accountService;
+        this.clientService=clientService;
         this.authenticationService = authenticationService;
         loginView.setLoginButtonListener(new LoginButtonListener());
         loginView.setRegisterButtonListener(new RegisterButtonListener());
@@ -32,6 +41,7 @@ public class LoginController {
         public void actionPerformed(ActionEvent e) {
             String username = loginView.getUsername();
             String password = loginView.getPassword();
+            Map<Right, Boolean> map = new LinkedHashMap<Right, Boolean>();
 
             Notification<User> loginNotification = null;
             try {
@@ -45,17 +55,20 @@ public class LoginController {
                     JOptionPane.showMessageDialog(loginView.getContentPane(), loginNotification.getFormattedErrors());
                 } else {
                     JOptionPane.showMessageDialog(loginView.getContentPane(), "Login successful!");
-                    for (Role role : loginNotification.getResult().getRoles())
 
-                        if(role.getRole().equals(ADMINISTRATOR))
-                        {
-                            System.out.println(role.getRights().toString());
-                        }
-                      else if (role.getRole().equals(CUSTOMER))
-                        {
-                            System.out.println(role.getRights().toString());
-                        }
+                for (Role role : loginNotification.getResult().getRoles()) {
+                    for (Right right : role.getRights()) {
+                        map.put(right, true);
+                    }
 
+                    if (role.getRole().equals(ADMINISTRATOR)) {
+                        AdministratorController adminController = new AdministratorController(map, authenticationService);
+
+                    } else if (role.getRole().equals(EMPLOYEE)) {
+                        EmployeeController employeeController = new EmployeeController(map,clientService,accountService);
+
+                    }
+                }
                 }
             }
         }
@@ -68,7 +81,7 @@ public class LoginController {
             String username = loginView.getUsername();
             String password = loginView.getPassword();
 
-            Notification<Boolean> registerNotification = authenticationService.register(username, password, CUSTOMER);
+            Notification<Boolean> registerNotification = authenticationService.register(username, password, EMPLOYEE);
             if (registerNotification.hasErrors()) {
                 JOptionPane.showMessageDialog(loginView.getContentPane(), registerNotification.getFormattedErrors());
             } else {
@@ -83,5 +96,6 @@ public class LoginController {
             }
         }
     }
-
 }
+
+

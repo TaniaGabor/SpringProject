@@ -9,7 +9,10 @@ public interface UserRepository {
     List<User> findAll();
 
     Notification<User> findByUsernameAndPassword(String username, String password) throws AuthenticationException;
+    Notification<Long> findByUsername(String username) throws AuthenticationException;
+    Notification<Long> deleteByUsername(String username) throws AuthenticationException;
 
+    Notification<Boolean> modifyPassword(String username,String password);
     boolean save(User user);
 
     void removeAll();

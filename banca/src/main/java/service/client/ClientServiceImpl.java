@@ -1,16 +1,24 @@
 package service.client;
+import database.Util;
 import model.Client;
-import repository.client.ClientInformation;
+import model.Role;
+import model.User;
+import model.builder.ClientBuilder;
+import model.builder.UserBuilder;
+import model.validation.ClientValidator;
+import model.validation.Notification;
+import model.validation.UserValidator;
+import repository.client.ClientRepository;
 
 
-
+import java.util.Collections;
 import java.util.List;
 
 public class ClientServiceImpl implements ClientService {
 
-    private final ClientInformation clientRepository;
+    private final ClientRepository clientRepository;
 
-    public ClientServiceImpl(ClientInformation aClientRepository)
+    public ClientServiceImpl(ClientRepository aClientRepository)
     {
         clientRepository = aClientRepository;
     }
@@ -26,8 +34,26 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public boolean save(Client client) {
-        return clientRepository.save(client);
+    public Notification<Boolean> save(String name, String cnp,String idenNumber,String adress) {
+        Client client = new ClientBuilder()
+                .setName(name)
+                .setPersonalNumericalCode(cnp)
+                .setIdentificationNumber(idenNumber)
+                .setAdress(adress)
+                .build();
+        ClientValidator clientValidator = new ClientValidator(client);
+        boolean clientValid = clientValidator.validate();
+        Notification<Boolean> userRegisterNotification = new Notification<>();
+
+        if (!clientValid) {
+            clientValidator.getErrors().forEach(userRegisterNotification::addError);
+            userRegisterNotification.setResult(Boolean.FALSE);
+        } else {
+
+            userRegisterNotification.setResult(clientRepository.save(client));
+        }
+        return userRegisterNotification;
+
     }
 
 

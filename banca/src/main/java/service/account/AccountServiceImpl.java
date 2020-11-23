@@ -1,16 +1,16 @@
 package service.account;
 
 import model.Account;
-import repository.account.AccountInformation;
+import repository.account.AccountRepository;
 
 
 import java.util.List;
 
 public class AccountServiceImpl implements AccountService {
 
-    private final AccountInformation accountRepository;
+    private final AccountRepository accountRepository;
 
-    public AccountServiceImpl(AccountInformation aAccountRepository)
+    public AccountServiceImpl(AccountRepository aAccountRepository)
     {
         accountRepository = aAccountRepository;
     }
@@ -23,6 +23,11 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Account findById(Long id) {
         return accountRepository.findById(id);
+    }
+
+    @Override
+    public AccountRepository getAccountRepository() {
+        return accountRepository;
     }
 
     @Override

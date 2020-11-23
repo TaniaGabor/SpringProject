@@ -4,7 +4,7 @@ import model.Client;
 
 import java.util.List;
 
-public interface ClientInformation {
+public interface ClientRepository {
     List<Client> findAll();
 
    Client findById(Long id);

@@ -1,15 +1,13 @@
 package repository.client;
 
-import model.Account;
 import model.Client;
 
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.stream.Collectors;
 
-public class ClientInformationMock implements ClientInformation {
+public class ClientInformationMock implements ClientRepository {
 
     private List<Client> clients;
 

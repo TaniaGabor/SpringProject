@@ -1,14 +1,14 @@
 package repository.account;
 
 import model.Account;
+import model.validation.Notification;
 
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.stream.Collectors;
 
-public class AccountInformationMock implements AccountInformation {
+public class AccountInformationMock implements AccountRepository {
 
     private List<Account> accounts;
 
@@ -37,20 +37,25 @@ public class AccountInformationMock implements AccountInformation {
         return accounts.add(account);
     }
 
-  /*  @Override
-    public boolean update(Account account) {
-        ListIterator<Account> listIterator = accounts.listIterator();
-
-        while(listIterator.hasNext()) {
-             if( listIterator.next().equals(account))
-             {
-                 listIterator.set(account);
-                 return true;
-             }
-        }
-      return false;
+    @Override
+    public Notification<Long> findByIdentificationNumber(String username) {
+        return null;
     }
-*/
+
+    /*  @Override
+      public boolean update(Account account) {
+          ListIterator<Account> listIterator = accounts.listIterator();
+
+          while(listIterator.hasNext()) {
+               if( listIterator.next().equals(account))
+               {
+                   listIterator.set(account);
+                   return true;
+               }
+          }
+        return false;
+      }
+  */
     @Override
     public boolean delete(Account account) {
      return accounts.remove(account);

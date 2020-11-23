@@ -9,19 +9,25 @@ public class SQLTableCreationFactory {
             case ACCOUNT:
                 return "CREATE TABLE IF NOT EXISTS account (" +
                         "  id int(11) NOT NULL AUTO_INCREMENT," +
-                        "  identityCardNumber varchar(500) NOT NULL," +
+                        "idClient int(11) NOT NULL,"+
+                        "  identityCardNumber varchar(500)  unique NOT NULL," +
                         "  type varchar(500) NOT NULL," +
                         "  dateofCreation datetime DEFAULT NULL," +
-                        "  amountofMoney int(11) NOT NULL,"+
+                        "  amountofMoney double(7, 4) NOT NULL,"+
                         "  PRIMARY KEY (id),"+
-                        "  UNIQUE KEY id_UNIQUE (id)" +
+                        "  UNIQUE KEY id_UNIQUE (id)," +
+                        "FOREIGN KEY (idClient)"+
+                        "REFERENCES client(id)"+
+                        "ON DELETE CASCADE "+
+                        "ON UPDATE CASCADE"+
                         ") ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;";
             case CLIENT:
                 return "CREATE TABLE IF NOT EXISTS client(" +
                         "  id int(11) NOT NULL AUTO_INCREMENT," +
+                        "  idClient int(11) NOT NULL,"+
                         "  name  varchar(500) NOT NULL," +
-                        "  personalNumericalCode varchar(500) NOT NULL," +
-                        "  identificationNumber varchar(500) NOT NULL," +
+                        "  personalNumericalCode  varchar(500)  unique NOT NULL," +
+                        "  identificationNumber   varchar(500) unique NOT NULL," +
                         "  adress varchar(600) NOT NULL," +
                         "  PRIMARY KEY (id),"+
                         "  UNIQUE KEY id_UNIQUE (id)" +

@@ -8,18 +8,18 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClientInformationMySQL implements ClientInformation {
+public class ClientRepositoryMySQL implements ClientRepository {
 
-    private final JDBConnectionWrapper connectionWrapper;
+    private final Connection connection;
 
-    public ClientInformationMySQL(JDBConnectionWrapper jdbConnectionWrapper)
+    public ClientRepositoryMySQL(Connection connection)
     {
-        connectionWrapper = jdbConnectionWrapper;
+       this.connection=connection;
     }
 
     @Override
     public List<Client> findAll() {
-        Connection connection = connectionWrapper.getConnection();
+        Connection connection = this.connection;
         List<Client> accounts = new ArrayList<>();
         try {
             Statement statement = connection.createStatement();
@@ -43,15 +43,14 @@ public class ClientInformationMySQL implements ClientInformation {
 
     @Override
     public boolean save(Client client) {
-        Connection connection = connectionWrapper.getConnection();
+        Connection connection = this.connection;
         try {
             PreparedStatement insertStatement = connection
-                    .prepareStatement("INSERT INTO client values (null, ?, ?, ?,?,?)");
+                    .prepareStatement("INSERT INTO client values (null, ?, ?, ?,?)");
             insertStatement.setString(1, client.getName());
             insertStatement.setString(2, client.getPersonalNumericalCode());
-            insertStatement.setString(3, client.getPersonalNumericalCode());
-            insertStatement.setString(4, client.getIdentificationNumber());
-            insertStatement.setString(5, client.getAdress());
+            insertStatement.setString(3, client.getIdentificationNumber());
+            insertStatement.setString(4, client.getAdress());
             insertStatement.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -82,7 +81,7 @@ public class ClientInformationMySQL implements ClientInformation {
 
     @Override
     public boolean delete(Client client) {
-        Connection connection = connectionWrapper.getConnection();
+        Connection connection = this.connection;
         try{
             PreparedStatement deleteStatement=connection.prepareStatement("delete from client where personalNumericalCode=? ");
             deleteStatement.setString(1, client.getPersonalNumericalCode());
@@ -98,7 +97,7 @@ public class ClientInformationMySQL implements ClientInformation {
 
     @Override
     public void removeAll() {
-        Connection connection = connectionWrapper.getConnection();
+        Connection connection = this.connection;
         try {
             Statement statement = connection.createStatement();
             String sql = "DELETE from client where id >= 0";

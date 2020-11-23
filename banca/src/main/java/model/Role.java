@@ -6,6 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Role {
+    @Override
+    public String toString() {
+        return
+                " Role= " + role+"   Rights=  "+rights ;
+    }
 
     private Long id;
     private String role;
