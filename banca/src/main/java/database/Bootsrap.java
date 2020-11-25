@@ -29,7 +29,7 @@ public class Bootsrap {
     private static UserRepository userRepository;
 
     public static void main(String[] args) throws SQLException {
-        dropAll();
+       dropAll();
 
         bootstrapTables();
 

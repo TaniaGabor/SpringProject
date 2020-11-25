@@ -1,20 +1,20 @@
 package repository.client;
 
 import model.Client;
+import model.validation.Notification;
 
 import java.util.List;
 
 public interface ClientRepository {
-    List<Client> findAll();
 
-   Client findById(Long id);
 
-    boolean save(Client client); /*add*/
 
-    /* boolean update (Account account);*/
+    Notification<Client> findbyCNP(String CNP) throws ClientException;
+    void modify(String cnp, String newName, String adress) ;
+    boolean save(Client client);
 
     boolean delete(Client account);
 
-    void removeAll();
+
 
 }

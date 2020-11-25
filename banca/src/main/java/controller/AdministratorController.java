@@ -2,16 +2,25 @@ package controller;
 
 import model.Right;
 import model.Role;
+import model.User;
 import model.validation.Notification;
 import repository.user.AuthenticationException;
 import service.user.AuthenticationService;
 import view.AdminandEmployeeView;
+import view.LoginView;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import static database.Constants.Roles.EMPLOYEE;
 
@@ -20,15 +29,26 @@ public class AdministratorController {
     private final AdminandEmployeeView adminView;
 
 
+
     public AdministratorController(Map<Right, Boolean> map, AuthenticationService authenticationService) {
+
         this.adminView = new AdminandEmployeeView(map);
         adminView.setViewButtonListener(new ViewButtonListener(authenticationService));
         adminView.setCreateButtonListener(new CreateButtonListener(authenticationService));
         adminView.setDeleteButtonListener(new DeleteButtonListener(authenticationService));
-        adminView.setActivityButtonListener(new ActivityButtonListener());
+        adminView.setActivityButtonListener(new ActivityButtonListener(authenticationService));
         adminView.setUpdateButtonListener(new UpdateButtonListener(authenticationService));
+        adminView.setLogOutButtonListener(new LogoutButtonListener());
     }
 
+    private class LogoutButtonListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            System.exit(0);
+
+        }
+    }
     private class ViewButtonListener implements ActionListener {
         private final AuthenticationService authenticationService;
 
@@ -193,11 +213,49 @@ public class AdministratorController {
 
 
         private class ActivityButtonListener implements ActionListener {
+        private final AuthenticationService authenticationService;
+
+
+            public ActivityButtonListener(AuthenticationService authenticationService) {
+                this.authenticationService = authenticationService;
+
+            }
 
             @Override
             public void actionPerformed(ActionEvent e) {
+                String[] button = {"OK"};
+                String data;
+                Random rand=new Random();
+                JPanel firstPanel = new JPanel();
+                JLabel lbl = new JLabel("Insert Username");
+                JTextField txt = new JTextField(20);
+                firstPanel.add(lbl);
+                firstPanel.add(txt);
+                int SelectedOption = JOptionPane.showOptionDialog(null, firstPanel, "Username", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, button, button[0]);
+                 if (SelectedOption==0)
+                 {
+                     String text = txt.getText();
+                     try {
+                         Notification<String>dates= authenticationService.getUserRepository().getwellDate(text);
 
 
+                         if(dates.getResult()==null)
+                         {
+                             JOptionPane.showMessageDialog(adminView.getContentPane(), "Invalid user!");
+                         }
+                         else
+                         {
+                             FileWriter writer= new FileWriter("activity"+rand.nextInt()+".txt");
+                             writer.write(text+dates.getResult());
+                             writer.close();
+                             JOptionPane.showMessageDialog(adminView.getContentPane(),dates.getResult() );
+                         }
+                     } catch (SQLException | IOException throwables) {
+                         throwables.printStackTrace();
+                     }
+
+
+                 }
             }
         }
 

@@ -26,6 +26,10 @@ public class AccountBuilder {
         account.setType(type);
         return this;
     }
+    public AccountBuilder setCnp(String cnp) {
+        account.setCnp(cnp);
+        return this;
+    }
 
     public AccountBuilder setDateofCreation(Date dateofCreation) {
         account.setDateofCreation(dateofCreation);

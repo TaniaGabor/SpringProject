@@ -1,18 +1,21 @@
 package repository.account;
 
 import model.Account;
+import model.Client;
 import model.builder.AccountBuilder;
+import model.builder.ClientBuilder;
 import model.validation.Notification;
 import repository.user.AuthenticationException;
 import utility.JDBConnectionWrapper;
 
 import java.sql.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static database.Constants.Tables.ACCOUNT;
-import static database.Constants.Tables.USER;
+import static database.Constants.Tables.*;
 
 public class AccountRepositoryMySQL implements AccountRepository {
 
@@ -43,79 +46,88 @@ public class AccountRepositoryMySQL implements AccountRepository {
     }
 
     @Override
-    public Account findById(Long id) {
+    public Account findByIdentityCardNumber(String identityCardNumber) throws SQLException {
+        Statement statement = connection.createStatement();
+        String fetchUserSql = "Select * from `" + ACCOUNT + "` where `identityCardNumber`=\'" + identityCardNumber + "\'";
+        ResultSet userResultSet = statement.executeQuery(fetchUserSql);
+        if (userResultSet.next()) {
+            Account account = getAccountFromResultSet(userResultSet);
+            return account;
+
+        }
         return null;
+
     }
+
+
 
     @Override
     public boolean save(Account account) {
         Connection connection = this.connection;
         try {
             PreparedStatement insertStatement = connection
-                    .prepareStatement("INSERT INTO account values (null, ?, ?, ?,?)");
-            insertStatement.setString(1, account.getIdentityCardNumber());
-            insertStatement.setString(2, account.getType());
-            insertStatement.setDate(3, new java.sql.Date(account.getDateofCreation().getTime()));
-            insertStatement.setDouble(4, account.getAmountofMoney());
+                    .prepareStatement("INSERT INTO account values (null, ?, ?, ?,?,?)");
+            insertStatement.setString(1,account.getCnp());
+            insertStatement.setString(2, account.getIdentityCardNumber());
+            insertStatement.setString(3, account.getType());
+            insertStatement.setTimestamp(4, new java.sql.Timestamp(new java.util.Date().getTime()));
+
+            insertStatement.setDouble(5, account.getAmountofMoney());
             insertStatement.executeUpdate();
             return true;
         } catch (SQLException e) {
-            e.printStackTrace();
             return false;
+
         }
     }
 
     @Override
-    public Notification<Long> findByIdentificationNumber(String identificationNumber) {
-        Notification<Long> identityCardNumber = new Notification<>();
-        try {
-            Statement statement = connection.createStatement();
-            String fetchUserSql = "Select * from `" + ACCOUNT + "` where `identityCardNumber`=\'" + identificationNumber + "\'";
-            ResultSet userResultSet = statement.executeQuery(fetchUserSql);
-            if (userResultSet.next()) {
-                Long id = userResultSet.getLong("id");
-                identityCardNumber.setResult(id);
-                return identityCardNumber;
-            } else {
-                identityCardNumber.addError("Invalid username");
-                return identityCardNumber;
-            }
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
+    public boolean modifyMoney(String identityCardNumber, Double amountOfMoney) {
+        Connection connection = this.connection;
+        try{
+            PreparedStatement updateStatement=connection.prepareStatement("Update account set amountofMoney=? where identityCardNumber=?");
+            updateStatement.setDouble(1,amountOfMoney);
+            updateStatement.setString(2,identityCardNumber);
+            int done=updateStatement.executeUpdate();
+            return done != 0;
 
-        }
-        return identityCardNumber;
-    }
-
-   /* @Override
-    public boolean update(Account account) {
-
-        Connection connection = connectionWrapper.getConnection();
-        try{ PreparedStatement updateStatement=connection.prepareStatement(
-                "UPDATE account set (? ?) where identityCardNumber=?");
-            updateStatement.setString(1,account.getType());
-            updateStatement.setLong(2,account.getAmountofMoney());
-            updateStatement.setString(3,account.getIdentityCardNumber());
-            updateStatement.executeUpdate();
-            return true;
 
         } catch (SQLException throwables) {
             throwables.printStackTrace();
             return false;
         }
+    }
+
+   
 
 
-    }*/
+
 
     @Override
-    public boolean delete(Account account) {
+    public Boolean deleteByIdentityCardNumber(String identityCardNumber) {
         Connection connection = this.connection;
         try{
             PreparedStatement deleteStatement=connection.prepareStatement("delete from account where identityCardNumber=? ");
-            deleteStatement.setString(1,account.getIdentityCardNumber());
+            deleteStatement.setString(1,identityCardNumber);
             deleteStatement.executeUpdate();
             return true;
+
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean modify(String identityCardNumber,String newIdentityCardNumber) {
+        Connection connection = this.connection;
+        try{
+            PreparedStatement updateStatement=connection.prepareStatement("Update account set identityCardNumber=? where identityCardNumber=?");
+            updateStatement.setString(1,newIdentityCardNumber);
+            updateStatement.setString(2,identityCardNumber);
+            int done=updateStatement.executeUpdate();
+            return done != 0;
 
 
         } catch (SQLException throwables) {
@@ -140,6 +152,7 @@ public class AccountRepositoryMySQL implements AccountRepository {
     private Account getAccountFromResultSet(ResultSet rs) throws SQLException {
         return new AccountBuilder()
                 .setId(rs.getLong("id"))
+                .setCnp(rs.getString("cnpClient"))
                 .setIdentityCardNumber(rs.getString("identityCardNumber"))
                 .setType(rs.getString("type"))
                 .setDateofCreation(new Date(rs.getDate("dateofCreation").getTime()))

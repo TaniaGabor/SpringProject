@@ -2,9 +2,6 @@ package model.builder;
 
 import model.Client;
 
-
-import java.util.Date;
-
 public class ClientBuilder {
     private Client client;
 
@@ -12,7 +9,7 @@ public class ClientBuilder {
         client = new Client();
     }
 
-    public ClientBuilder setId(Long id) {
+    public ClientBuilder setId(Integer id) {
         client.setId(id);
         return this;
     }

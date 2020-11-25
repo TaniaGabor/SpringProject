@@ -1,12 +1,12 @@
 package model;
 
 public class Client {
-    private Long id;
+    private Integer id;
     private String name;
     private String personalNumericalCode;
     private String identificationNumber;
     private String adress;
-    private Long amountofMoney;
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) {
@@ -18,11 +18,11 @@ public class Client {
         return ((Client) obj).getPersonalNumericalCode().equals(this.personalNumericalCode);
 
     }
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -58,6 +58,14 @@ public class Client {
         this.adress = adress;
     }
 
-
+    @Override
+    public String toString() {
+        return "Client" +
+                "id=" + id +
+                ", name=" + name + '\'' +
+                ", personalNumericalCode='" + personalNumericalCode + '\'' +
+                ", identificationNumber='" + identificationNumber + '\'' +
+                ", adress='" + adress + '\'' ;
     }
+}
 

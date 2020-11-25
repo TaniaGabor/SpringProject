@@ -17,6 +17,7 @@ public class Constants {
     }
 
     public static class Tables {
+        public static final String ACTIVITY = "activity";
         public static final String ACCOUNT = "account";
         public static final String CLIENT = "client";
         public static final String USER = "user";

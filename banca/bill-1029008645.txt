@@ -1,0 +1,1 @@
+Account , identityCardNumber='12', type='Debit', dateofCreation=Mon Nov 23 23:00:00 EET 2020, amountofMoney=1234.6, cnp='6000312055067'

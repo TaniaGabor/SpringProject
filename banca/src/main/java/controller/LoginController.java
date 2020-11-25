@@ -14,6 +14,7 @@ import view.LoginView;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -65,7 +66,12 @@ public class LoginController {
                         AdministratorController adminController = new AdministratorController(map, authenticationService);
 
                     } else if (role.getRole().equals(EMPLOYEE)) {
-                        EmployeeController employeeController = new EmployeeController(map,clientService,accountService);
+                        EmployeeController employeeController = new EmployeeController(map,clientService,accountService, loginNotification.getResult(),authenticationService);
+                        try {
+                            authenticationService.getUserRepository().setDateofAcces(loginNotification.getResult());
+                        } catch (SQLException throwables) {
+                            throwables.printStackTrace();
+                        }
 
                     }
                 }

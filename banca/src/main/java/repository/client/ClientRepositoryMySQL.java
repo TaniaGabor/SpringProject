@@ -2,11 +2,13 @@ package repository.client;
 
 import model.Client;
 import model.builder.ClientBuilder;
-import utility.JDBConnectionWrapper;
+import model.validation.Notification;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import static database.Constants.Tables.CLIENT;
 
 public class ClientRepositoryMySQL implements ClientRepository {
 
@@ -17,36 +19,54 @@ public class ClientRepositoryMySQL implements ClientRepository {
        this.connection=connection;
     }
 
+
+
+
+
     @Override
-    public List<Client> findAll() {
-        Connection connection = this.connection;
-        List<Client> accounts = new ArrayList<>();
+    public Notification<Client> findbyCNP(String Cnp) throws ClientException {
+        Notification<Client> findName = new Notification<>();
         try {
             Statement statement = connection.createStatement();
-            String sql = "Select * from client";
-            ResultSet rs = statement.executeQuery(sql);
+            String fetchUserSql = "Select * from `" + CLIENT + "` where `personalNumericalCode`=\'" + Cnp + "\'";
+            ResultSet userResultSet = statement.executeQuery(fetchUserSql);
+            if (userResultSet.next()) {
+                Client client = getClientFromResultSet(userResultSet);
 
-            while (rs.next()) {
-                accounts.add(getClientFromResultSet(rs));
+                findName.setResult(client);
+                return findName;
+            } else {
+                findName.addError("Invalid CNP!");
+                return findName;
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new ClientException();
         }
-
-        return accounts;
     }
 
     @Override
-    public Client findById(Long id) {
-        return null;
+    public void modify(String cnp, String newName, String adress)  {
+        Connection connection = this.connection;
+        try {
+            PreparedStatement statement = connection.prepareStatement("Update client set name=? , adress=?  where personalNumericalCode=?");
+            statement.setString(1, newName);
+            statement.setString(2, adress);
+            statement.setString(3, cnp);
+            statement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
+
 
     @Override
     public boolean save(Client client) {
         Connection connection = this.connection;
         try {
             PreparedStatement insertStatement = connection
-                    .prepareStatement("INSERT INTO client values (null, ?, ?, ?,?)");
+                    .prepareStatement("INSERT INTO client values (null, ?, ?, ?, ?)");
             insertStatement.setString(1, client.getName());
             insertStatement.setString(2, client.getPersonalNumericalCode());
             insertStatement.setString(3, client.getIdentificationNumber());
@@ -59,25 +79,7 @@ public class ClientRepositoryMySQL implements ClientRepository {
         }
     }
 
-   /* @Override
-    public boolean update(Account account) {
 
-        Connection connection = connectionWrapper.getConnection();
-        try{ PreparedStatement updateStatement=connection.prepareStatement(
-                "UPDATE account set (? ?) where identityCardNumber=?");
-            updateStatement.setString(1,account.getType());
-            updateStatement.setLong(2,account.getAmountofMoney());
-            updateStatement.setString(3,account.getIdentityCardNumber());
-            updateStatement.executeUpdate();
-            return true;
-
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-            return false;
-        }
-
-
-    }*/
 
     @Override
     public boolean delete(Client client) {
@@ -95,22 +97,12 @@ public class ClientRepositoryMySQL implements ClientRepository {
         }
     }
 
-    @Override
-    public void removeAll() {
-        Connection connection = this.connection;
-        try {
-            Statement statement = connection.createStatement();
-            String sql = "DELETE from client where id >= 0";
-            statement.executeUpdate(sql);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+
 
 
     private Client  getClientFromResultSet(ResultSet rs) throws SQLException {
         return new ClientBuilder()
-                .setId(rs.getLong("id"))
+                .setId(rs.getInt("id"))
                 .setName(rs.getString("name"))
                 .setPersonalNumericalCode(rs.getString("personalNumericalCode"))
                 .setIdentificationNumber(rs.getString("identificationNumber"))

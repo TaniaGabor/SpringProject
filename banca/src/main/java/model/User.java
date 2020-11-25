@@ -1,5 +1,6 @@
 package model;
 
+import java.util.Date;
 import java.util.List;
 
 public class User {
@@ -8,6 +9,24 @@ public class User {
     private String username;
     private String password;
     private List<Role> roles;
+    private Date dateAccess;
+    private Date dateLogOut;
+
+    public Date getDateAccess() {
+        return dateAccess;
+    }
+
+    public void setDateAccess(Date dateAccess) {
+        this.dateAccess = dateAccess;
+    }
+
+    public Date getDateLogOut() {
+        return dateLogOut;
+    }
+
+    public void setDateLogOut(Date dateLogOut) {
+        this.dateLogOut = dateLogOut;
+    }
 
     public Long getId() {
         return id;

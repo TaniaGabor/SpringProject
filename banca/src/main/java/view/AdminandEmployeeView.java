@@ -26,6 +26,7 @@ public class AdminandEmployeeView extends JFrame {
     private JButton viewClient;
     private JButton updateClient;
     private JButton processBills;
+    private JButton logout;
 
     private JTextField usernameTextField;
     private JPasswordField passwordTextField;
@@ -133,6 +134,11 @@ public class AdminandEmployeeView extends JFrame {
                 panel.add(processBills, cs);
 
             }
+            cs.gridx = 0;
+            cs.gridy = 6;
+            cs.gridwidth =6;
+            panel.add(logout, cs);
+
         }
         panel.setBorder(new LineBorder(Color.GRAY));
         getContentPane().add(panel, BorderLayout.CENTER);
@@ -157,11 +163,14 @@ public class AdminandEmployeeView extends JFrame {
         viewClient = new JButton("View Client");
         updateClient = new JButton("Update Client");
         processBills=new JButton("Process Bills");
+        logout=new JButton("Log out");
 
     }
 
 
-
+    public void setLogOutButtonListener(ActionListener logoutButtonListener) {
+        logout.addActionListener(logoutButtonListener);
+    }
     public void setViewButtonListener(ActionListener viewButtonListener) {
         viewUser.addActionListener(viewButtonListener);
     }
@@ -213,10 +222,10 @@ public class AdminandEmployeeView extends JFrame {
         activityUser.addActionListener(activityButtonListener);
     }
     public void  setDeleteAccountButtonListener(ActionListener deleteAccountButtonListener) {
-        activityUser.addActionListener(deleteAccountButtonListener);
+       deleteAccount.addActionListener(deleteAccountButtonListener);
     }
     public void  setProcessBillsButtonListener(ActionListener processBillsButtonListener) {
-        activityUser.addActionListener(processBillsButtonListener);
+        processBills.addActionListener(processBillsButtonListener);
     }
 
 }

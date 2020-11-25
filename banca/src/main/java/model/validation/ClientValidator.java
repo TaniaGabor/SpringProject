@@ -26,9 +26,11 @@ public class ClientValidator {
         errors = new ArrayList<>();
     }
 
-    public boolean validate() {
+    public boolean validate(boolean validateCnpOnly) {
         validateCnp(client.getPersonalNumericalCode());
-        validateIdentificationNumber(client.getIdentificationNumber());
+        if (!validateCnpOnly) {
+            validateIdentificationNumber(client.getIdentificationNumber());
+        }
         return errors.isEmpty();
     }
 

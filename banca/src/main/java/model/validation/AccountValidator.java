@@ -1,0 +1,68 @@
+package model.validation;
+
+import model.Account;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+
+public class AccountValidator {
+    private static final String CNP_VALIDATION_REGEX = "^[1-9]\\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\\d|3[01])(0[1-9]|[1-4]\\d|5[0-2]|99)(00[1-9]|0[1-9]\\d|[1-9]\\d\\d)\\d$";
+    private static final String MONEY_VALIDATION_REGEX="[0-9](.[0-9]*)?";
+
+    public List<String> getErrors() {
+        return errors;
+    }
+
+    private final List<String> errors;
+
+    private final Account account;
+
+
+    public AccountValidator(Account account) {
+        this.account = account;
+        errors = new ArrayList<>();
+    }
+
+    public boolean validate(boolean validateIdentityCard) {
+        validateIdentityCadNumber(account.getIdentityCardNumber());
+        if (!validateIdentityCard) {
+            validateMoneyAmount(account.getAmountofMoney());
+            validateCnp(account.getCnp());
+
+        }
+        return errors.isEmpty();
+    }
+
+    private void validateIdentityCadNumber(String s) {
+        if (s != null && !s.isEmpty()) {
+            for (char c : s.toCharArray()) {
+                if (!Character.isDigit(c)) {
+                    errors.add("Invalid Identity Card Number!");
+                    return;
+
+                }
+            }
+        }
+    }
+
+    private void validateMoneyAmount(Double moneyAmount) {
+        if(moneyAmount<0)
+            errors.add("Invalid Money Amount");
+    }
+
+
+
+    private void validateCnp(String username) {
+        if (!Pattern.compile(CNP_VALIDATION_REGEX).matcher(username).matches()) {
+            errors.add("Invalid CNP!");
+        }
+    }
+
+
+
+
+
+
+
+}

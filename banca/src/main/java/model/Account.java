@@ -9,6 +9,25 @@ public class Account {
     private String type;
     private Date dateofCreation;
     private Double amountofMoney;
+    private String cnp;
+
+    public String getCnp() {
+        return cnp;
+    }
+
+    public void setCnp(String cnp) {
+        this.cnp = cnp;
+    }
+
+    @Override
+    public String toString() {
+        return "Account " +
+                ", identityCardNumber='" + identityCardNumber + '\'' +
+                ", type='" + type + '\'' +
+                ", dateofCreation=" + dateofCreation +
+                ", amountofMoney=" + amountofMoney +
+                ", cnp='" + cnp + '\'' ;
+    }
 
     @Override
     public boolean equals(Object obj) {

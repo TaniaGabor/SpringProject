@@ -8,8 +8,10 @@ import repository.security.RightsRolesRepository;
 
 import java.security.MessageDigest;
 import java.sql.*;
-import java.util.Collections;
-import java.util.List;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Date;
 
 import static database.Constants.Tables.USER;
 
@@ -100,9 +102,11 @@ public class UserRepositoryMySQL implements UserRepository {
     public boolean save(User user) {
         try {
             PreparedStatement insertUserStatement = connection
-                    .prepareStatement("INSERT INTO user values (null, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+                    .prepareStatement("INSERT INTO user values (null, ?, ?,?,?)", Statement.RETURN_GENERATED_KEYS);
             insertUserStatement.setString(1, user.getUsername());
             insertUserStatement.setString(2, user.getPassword());
+            insertUserStatement.setDate(3,null);
+            insertUserStatement.setDate(4,null);
             insertUserStatement.executeUpdate();
 
             ResultSet rs = insertUserStatement.getGeneratedKeys();
@@ -162,15 +166,71 @@ public class UserRepositoryMySQL implements UserRepository {
         } catch (SQLException e) {
             e.printStackTrace();
 
-
-
         }
         return userRegisterNotification;
 
 
     }
 
+   public void setDateofAcces(User user) throws SQLException {
+        PreparedStatement statement = connection.prepareStatement("Update user set dateofAccess=? where username=?");
+        statement.setTimestamp(1, new java.sql.Timestamp(new java.util.Date().getTime()));
+        statement.setString(2, user.getUsername());
+        statement.executeUpdate();
 
-}
+    }
+    public void setDateofLogOut(User user) throws SQLException {
+        PreparedStatement statement = connection.prepareStatement("Update user set dateofLogOut=? where username=?");
+        statement.setTimestamp(1, new java.sql.Timestamp(new java.util.Date().getTime()));
+        statement.setString(2, user.getUsername());
+        statement.executeUpdate();
+
+    }
+    public Notification<String> getwellDate(String username) throws SQLException {
+
+        String dates;
+        Notification<String> ok=new Notification<String>();
+        Statement statement = connection.createStatement();
+        String fetchUserSql = "Select * from `" + USER + "` where `username`=\'" + username + "\'";
+        ResultSet userResultSet = statement.executeQuery(fetchUserSql);
+        if (userResultSet.next()) {
+            ok.setResult(userResultSet.getDate("dateofAccess").toString()+" " +userResultSet.getDate("dateofLogOut").toString());
+            return ok;
+        }
+        ok.setResult(null);
+        return ok;
+
+
+
+    }
+   /* public boolean insertActivity(User user,String activity) throws SQLException {
+        try {
+            PreparedStatement insertUserStatement = connection
+                    .prepareStatement("INSERT INTO activity values (null, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+            insertUserStatement.setString(1, user.getUsername());
+            insertUserStatement.setString(2, activity);
+            insertUserStatement.executeUpdate();
+
+            ResultSet rs = insertUserStatement.getGeneratedKeys();
+            rs.next();
+            long userId = rs.getLong(1);
+            user.setId(userId);
+
+            rightsRolesRepository.addRolesToUser(user, user.getRoles());
+
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println(e.getLocalizedMessage());
+            return false;
+        }*/
+
+
+
+
+
+    }
+
+
 
 

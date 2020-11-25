@@ -1,17 +1,11 @@
 package service.client;
-import database.Util;
 import model.Client;
-import model.Role;
-import model.User;
 import model.builder.ClientBuilder;
-import model.builder.UserBuilder;
 import model.validation.ClientValidator;
 import model.validation.Notification;
-import model.validation.UserValidator;
 import repository.client.ClientRepository;
 
 
-import java.util.Collections;
 import java.util.List;
 
 public class ClientServiceImpl implements ClientService {
@@ -23,18 +17,11 @@ public class ClientServiceImpl implements ClientService {
         clientRepository = aClientRepository;
     }
 
-    @Override
-    public List<Client> findAll() {
-        return clientRepository.findAll();
-    }
+
+
 
     @Override
-    public Client findById(Long id) {
-        return clientRepository.findById(id);
-    }
-
-    @Override
-    public Notification<Boolean> save(String name, String cnp,String idenNumber,String adress) {
+    public Notification<Boolean> save(String name, String cnp, String idenNumber, String adress) {
         Client client = new ClientBuilder()
                 .setName(name)
                 .setPersonalNumericalCode(cnp)
@@ -42,7 +29,7 @@ public class ClientServiceImpl implements ClientService {
                 .setAdress(adress)
                 .build();
         ClientValidator clientValidator = new ClientValidator(client);
-        boolean clientValid = clientValidator.validate();
+        boolean clientValid = clientValidator.validate(false);
         Notification<Boolean> userRegisterNotification = new Notification<>();
 
         if (!clientValid) {
@@ -55,6 +42,30 @@ public class ClientServiceImpl implements ClientService {
         return userRegisterNotification;
 
     }
+    @Override
+    public Notification<Boolean> modifyNameAdress(String cnp,String newName, String adress)   {
+        Notification<Boolean> clientUpdateNotification = new Notification<>();
+        Client client = new ClientBuilder()
+                .setPersonalNumericalCode(cnp)
+                .build();
+
+        ClientValidator clientValidator = new ClientValidator(client);
+        boolean clientValid = clientValidator.validate(true);
+        if (!clientValid) {
+            clientValidator.getErrors().forEach(clientUpdateNotification::addError);
+            clientUpdateNotification.setResult(Boolean.FALSE);
+        }
+        else
+        { clientUpdateNotification.setResult(Boolean.TRUE);
+             clientRepository.modify(cnp,newName,adress);
+            return clientUpdateNotification;
+        }
+
+        return clientUpdateNotification;
+    }
 
 
+    public ClientRepository getClientRepository() {
+        return clientRepository;
+    }
 }

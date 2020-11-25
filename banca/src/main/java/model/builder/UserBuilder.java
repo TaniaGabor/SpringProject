@@ -6,6 +6,7 @@ import model.Role;
 import model.User;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class UserBuilder {
@@ -26,6 +27,14 @@ public class UserBuilder {
         return this;
     }
 
+    public UserBuilder setDateofLogOut(Date date) {
+        user.setDateLogOut(date);
+        return this;
+    }
+    public UserBuilder setDateofAcces(Date date ) {
+        user.setDateAccess(date);
+        return this;
+    }
     public UserBuilder setRoles(List<Role> roles) {
         user.setRoles(roles);
         return this;
